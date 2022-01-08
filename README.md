@@ -11,9 +11,9 @@ $ npm install
 
 ## Setup
 
-To setup the application create an .env file with similar structure to the .env.example file.
-Add a port number that you wish an application to be running on.
-In MONGODB_ADRESS field add your url adress to your mongodb database.
+To setup the application create an .env file with similar structure to the .env.example file that exists in the repository.
+Add a port number that you wish an application to be running on eg. 3000.
+In MONGODB_ADRESS field add your url connection adress to your mongodb database.
 
 ## Running the app
 
