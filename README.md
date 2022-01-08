@@ -1,4 +1,5 @@
-
+## Description
+A simple server side application written in Nest.js that manages routes for http requests - ADD/GET/UPDATE and DELETE products from MongoDB.
 
 ## Installation
 
