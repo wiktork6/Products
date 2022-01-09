@@ -1,12 +1,15 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import {Product} from "../schemas/product.schema";
 import {Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
+import {asProduct} from "./utils/products.utils";
 
 @Injectable()
 export class ProductsService {
+
+  private COULD_NOT_FIND_PRODUCT = "Could not find product";
 
   constructor(@InjectModel("Product") private readonly productModel: Model<Product>) {}
 
@@ -20,13 +23,13 @@ export class ProductsService {
     try{
       product = await this.productModel.findById(id);
     } catch(error){
-      throw new NotFoundException('Could not find product')
+      throw new InternalServerErrorException(this.COULD_NOT_FIND_PRODUCT)
     }
 
     if(!product){
-      throw new NotFoundException('Could not find product')
+      throw new NotFoundException(this.COULD_NOT_FIND_PRODUCT)
     }
-    return this.removeUnnecessaryFields(product)
+    return asProduct(product)
   }
 
   async update(updateProductDto: UpdateProductDto) {
@@ -47,12 +50,4 @@ export class ProductsService {
     return this.productModel.remove( {_id:id} )
   }
 
-  removeUnnecessaryFields(product: Product): Product{
-    return {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      updateDate: product.updateDate
-    };
-  }
 }
