@@ -1,17 +1,21 @@
-import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import {Product} from "../schemas/product.schema";
 import {Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
 import {asProduct} from "./utils/products.utils";
+import {RequestValidator} from "./utils/RequestValidator";
 
 @Injectable()
 export class ProductsService {
 
   private COULD_NOT_FIND_PRODUCT = "Could not find product";
+  private requestValidator;
 
-  constructor(@InjectModel("Product") private readonly productModel: Model<Product>) {}
+  constructor(@InjectModel("Product") private readonly productModel: Model<Product>) {
+    this.requestValidator = new RequestValidator();
+  }
 
 
   async findAll() {
@@ -39,6 +43,11 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
+
+    if(!this.requestValidator.isValid(createProductDto)){
+      throw new BadRequestException("Invalid request")
+    }
+
     const newProduct = {
       ...createProductDto,
       updateDate: new Date()
